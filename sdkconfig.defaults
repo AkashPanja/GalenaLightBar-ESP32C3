@@ -1,0 +1,7 @@
+# Galena Light Bar — sdkconfig.defaults (ESP32-C3)
+
+# ESP-NOW / WiFi
+CONFIG_ESP_WIFI_ESPNOW_MAX_ENCRYPT_NUM=0
+
+# Log level
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
