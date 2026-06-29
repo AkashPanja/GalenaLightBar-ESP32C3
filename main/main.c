@@ -175,7 +175,7 @@ static void espnow_task(void *arg)
             int delta = (int)evt.pkt.value;
             if (delta == 0 || abs(delta) > MAX_ENCODER_DELTA) break;
 
-            float current = g_light_on ? g_brightness : 0.5f;
+            float current = g_brightness;
             float target  = fmaxf(0.01f, fminf(1.0f,
                                 current + g_brightness_step * delta));
 
