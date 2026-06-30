@@ -39,35 +39,30 @@ typedef struct {
 static void espnow_send_light_state(void);
 static void espnow_send_brightness(void);
 
-static void espnow_send_boot(void)
+static esp_err_t send_packet(uint8_t type, int32_t value)
 {
     galena_packet_t pkt = {
-        .type  = PKT_BOOT,
-        .value = 0,
+        .type  = type,
+        .value = value,
     };
     esp_err_t ret = esp_now_send(s_action_ring_mac, (uint8_t *)&pkt, sizeof(pkt));
-    if (ret != ESP_OK) ESP_LOGW(TAG, "TX boot FAILED: %d", ret);
-    ESP_LOGI(TAG, "TX boot notification");
+    ESP_LOGI(TAG, "TX type=%d val=%ld ret=%d", type, (long)value, ret);
+    return ret;
+}
+
+static void espnow_send_boot(void)
+{
+    send_packet(PKT_BOOT, 0);
 }
 
 static void espnow_send_light_state(void)
 {
-    galena_packet_t pkt = {
-        .type  = PKT_LIGHT_STATE,
-        .value = g_light_on ? 1 : 0,
-    };
-    esp_err_t ret = esp_now_send(s_action_ring_mac, (uint8_t *)&pkt, sizeof(pkt));
-    ESP_LOGI(TAG, "TX light_state=%s ret=%d", g_light_on ? "ON" : "OFF", ret);
+    send_packet(PKT_LIGHT_STATE, g_light_on ? 1 : 0);
 }
 
 static void espnow_send_brightness(void)
 {
-    galena_packet_t pkt = {
-        .type  = PKT_BRIGHTNESS,
-        .value = (int32_t)(g_brightness * 100.0f),
-    };
-    esp_err_t ret = esp_now_send(s_action_ring_mac, (uint8_t *)&pkt, sizeof(pkt));
-    ESP_LOGI(TAG, "TX brightness=%d%% ret=%d", (int)pkt.value, ret);
+    send_packet(PKT_BRIGHTNESS, (int32_t)(g_brightness * 100.0f));
 }
 
 static void espnow_recv_cb(const esp_now_recv_info_t *info,
