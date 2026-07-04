@@ -144,12 +144,9 @@ void espnow_task(void *arg)
 void espnow_sync_task(void *arg)
 {
     for (;;) {
-        vTaskDelay(pdMS_TO_TICKS(3000));
-        if (g_send_ok == 0 || g_send_fail > g_send_ok) {
-            ESP_LOGW(TAG, "No ACK yet or high fail ratio — retrying sync (ok=%ld fail=%ld)", (long)g_send_ok, (long)g_send_fail);
-            espnow_send_light_state();
-            espnow_send_brightness();
-        }
+        vTaskDelay(pdMS_TO_TICKS(10000));
+        espnow_send_light_state();
+        espnow_send_brightness();
     }
 }
 
