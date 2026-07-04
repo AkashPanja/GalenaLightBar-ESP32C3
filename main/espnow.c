@@ -13,6 +13,8 @@
 #include "esp_event.h"
 
 #include "galena_protocol.h"
+#include "ledc.h"
+#include "nvs_driver.h"
 
 #define TAG                 "GLB"
 
@@ -24,8 +26,6 @@ extern bool    g_light_on;
 extern float   g_brightness_step;
 extern uint8_t g_last_saved_bri_pct;
 
-extern void set_brightness(float brightness);
-
 static QueueHandle_t s_espnow_queue;
 static uint8_t s_action_ring_mac[] = ACTION_RING_MAC;
 
@@ -36,8 +36,8 @@ typedef struct {
     galena_packet_t pkt;
 } espnow_event_t;
 
-static void espnow_send_light_state(void);
-static void espnow_send_brightness(void);
+void espnow_send_light_state(void);
+void espnow_send_brightness(void);
 
 static esp_err_t send_packet(uint8_t type, int32_t value)
 {
@@ -50,17 +50,17 @@ static esp_err_t send_packet(uint8_t type, int32_t value)
     return ret;
 }
 
-static void espnow_send_boot(void)
+void espnow_send_boot(void)
 {
     send_packet(PKT_BOOT, 0);
 }
 
-static void espnow_send_light_state(void)
+void espnow_send_light_state(void)
 {
     send_packet(PKT_LIGHT_STATE, g_light_on ? 1 : 0);
 }
 
-static void espnow_send_brightness(void)
+void espnow_send_brightness(void)
 {
     send_packet(PKT_BRIGHTNESS, (int32_t)(g_brightness * 100.0f));
 }
@@ -140,9 +140,6 @@ void espnow_task(void *arg)
         }
     }
 }
-
-extern void nvs_save_light_on(void);
-extern void apply_light(void);
 
 void espnow_sync_task(void *arg)
 {

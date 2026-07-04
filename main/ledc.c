@@ -2,6 +2,7 @@
 
 #include "esp_log.h"
 
+#include "driver/gpio.h"
 #include "driver/ledc.h"
 
 #include "ledc.h"
